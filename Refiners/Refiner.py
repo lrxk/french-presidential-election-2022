@@ -8,17 +8,17 @@ class Refiner:
         self.filepath = filepath
 
     def get_xlsx_file(self):
-        all_files = os.listdir(self.file_path)
+        all_files = os.listdir(self.filepath)
         xlsx_file = []
         for file in all_files:
             if file.endswith('.xlsx'):
                 # file with full path
-                xlsx_file.append(os.path.join(self.file_path, file))
+                xlsx_file.append(os.path.join(self.filepath, file))
         return xlsx_file
     def refine_result(self):
-        first_round_str = [os.path.join(self.file_path, "resultats-par-dpt-t1-france-entiere.xlsx"),
-                           os.path.join(self.file_path, "resultats-par-reg-t1-france-entiere.xlsx")]
-        for file in self.xlsx_file:
+        first_round_str = [os.path.join(self.filepath, "resultats-par-dpt-t1-france-entiere.xlsx"),
+                           os.path.join(self.filepath, "resultats-par-reg-t1-france-entiere.xlsx")]
+        for file in self.get_xlsx_file():
             df = pd.read_excel(file)
             if file == first_round_str[0] or file == first_round_str[1]:
                 self.individual_refiner_first_round(df).to_csv(
@@ -27,14 +27,17 @@ class Refiner:
                 self.individual_refiner_second_round(df).to_csv(
                     file[0:len(file)-5]+".csv", index=False)
         pass
-    def get_candidates_order(self, df: pd.DataFrame):
+    def get_candidates_order(self, df: pd.DataFrame,round):
         """ Get the order of the candidates """
         candidates_order = []
         # return the first line of the dataframe
         df.loc[0]
-        
-        for i in range(1, 13):
-            candidates_order.append(df.columns[i])
+        if round == "first":
+            for i in range(1, 13):
+                candidates_order.append(df.columns[i])
+        else:
+            for i in range(1, 3):
+                candidates_order.append(df.columns[i])
         return candidates_order
 
     def str_candidats(self, df: pd.DataFrame, round):
@@ -42,15 +45,13 @@ class Refiner:
         df.columns[0:23]
         str_candidat = "_candidat_"
         str_candidats = []
-        # first round 12 candidates
-        if round == "first":
-            for i in range(1, 13):
-                str_candidats.append(str_candidat+str(i))
-        # second round 2 candidates
-        else:
-            for i in range(1, 3):
-                str_candidats.append(str_candidat+str(i))
+        # get the order of the candidates depending on the round
+        candidates_order = self.get_candidates_order(df,round)
+        for i in range(len(candidates_order)):
+            str_candidats.append(str_candidat+candidates_order[i])
         return str_candidats
+
+        
 
     def columns_to_repeat(self, df: pd.DataFrame):
         columns_to_repeat = []
