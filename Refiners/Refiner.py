@@ -20,7 +20,7 @@ class Refiner:
                            os.path.join(self.filepath, "resultats-par-reg-t1-france-entiere.xlsx")]
         for file in self.get_xlsx_file():
             df = pd.read_excel(file)
-            if file == first_round_str[0] or file == first_round_str[1]:
+            if file in first_round_str:
                 self.individual_refiner_first_round(df).to_csv(
                     file[0:len(file)-5]+".csv", index=False)
             else:
@@ -31,18 +31,26 @@ class Refiner:
         """ Get the order of the candidates """
         candidates_order = []
         # return the first line of the dataframe
-        df.loc[0]
-        if round == "first":
-            for i in range(1, 13):
-                candidates_order.append(df.columns[i])
-        else:
-            for i in range(1, 3):
-                candidates_order.append(df.columns[i])
+        first_row=df.loc[0]
+        # get the name of the candidates
+        for i in range(18,len(first_row),6):
+            candidates_order.append(first_row[i])
         return candidates_order
 
+    def drop_repeated_columns(self, df: pd.DataFrame):
+        column_to_drop = []
+        first_row=df.loc[0]
+        for i in range(17,len(first_row) ,6):
+            column_to_drop.append(df.columns[i])
+            column_to_drop.append(df.columns[i+1])
+            column_to_drop.append(df.columns[i+2])
+        
+        df.drop(columns=column_to_drop).to_csv('test.csv', index=False)
+        print(df.head())
+        return df
     def str_candidats(self, df: pd.DataFrame, round):
         """ Create column names """
-        df.columns[0:23]
+       
         str_candidat = "_candidat_"
         str_candidats = []
         # get the order of the candidates depending on the round
@@ -51,8 +59,6 @@ class Refiner:
             str_candidats.append(str_candidat+candidates_order[i])
         return str_candidats
 
-        
-
     def columns_to_repeat(self, df: pd.DataFrame):
         columns_to_repeat = []
         for i in range(17, 23):
@@ -60,7 +66,6 @@ class Refiner:
         return columns_to_repeat
 
     def new_columns(self, df, round):
-
         str_candidats = self.str_candidats(df, round)
         columns_to_repeat = self.columns_to_repeat(df)
         new_columns = []
@@ -84,11 +89,18 @@ class Refiner:
         return rename_column_dict
 
     def individual_refiner_first_round(self, df: pd.DataFrame):
+        
         df = df.rename(columns=self.rename_column_dict(df, "first"))
+        df=self.drop_repeated_columns(df)
         return df
 
     def individual_refiner_second_round(self, df: pd.DataFrame):
+        
         df = df.rename(columns=self.rename_column_dict(df, "second"))
+        df=self.drop_repeated_columns(df)
         return df
 
-    
+if __name__=="__main__":
+    filepath = "Data/XLSX/Results/Departement/First_Round"
+    r = Refiner(filepath)
+    r.refine_result()
