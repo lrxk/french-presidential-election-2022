@@ -44,9 +44,6 @@ class Refiner:
             column_to_drop.append(df.columns[i])
             column_to_drop.append(df.columns[i+1])
             column_to_drop.append(df.columns[i+2])
-        
-        df.drop(columns=column_to_drop).to_csv('test.csv', index=False)
-        print(df.head())
         return df
     def str_candidats(self, df: pd.DataFrame, round):
         """ Create column names """
@@ -102,5 +99,14 @@ class Refiner:
 
 if __name__=="__main__":
     filepath = "Data/XLSX/Results/Departement/First_Round"
+    r = Refiner(filepath)
+    r.refine_result()
+    filepath = "Data/XLSX/Results/Region/First_Round"
+    r = Refiner(filepath)
+    r.refine_result()
+    filepath = "Data/XLSX/Results/Departement/Second_Round"
+    r = Refiner(filepath)
+    r.refine_result()
+    filepath = "Data/XLSX/Results/Region/Second_Round"
     r = Refiner(filepath)
     r.refine_result()
