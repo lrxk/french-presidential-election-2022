@@ -15,7 +15,7 @@ class Scraper:
     def __init__(self, url):
         self.url = url
         
-    def get_result(self,id_key,result_filename):
+    def get_result(self,id_key):
         service = FirefoxService(GeckoDriverManager().install())
         browser = webdriver.Firefox(service=service)
         # get to the url
@@ -51,7 +51,7 @@ class Scraper:
             path="Data/XLSX/Results/Region/Second_Round/"
             pass
 
-        complete_filepath= os.path.join(path,result_filename)
+        complete_filepath= os.path.join(path,self.KEYS[id_key])
         response=request.urlretrieve(download_link,complete_filepath)
             
         time.sleep(3)
@@ -59,6 +59,10 @@ class Scraper:
         browser.quit()
 if __name__=="__main__":
     
-    scrap=Scraper("https://www.data.gouv.fr/fr/datasets/election-presidentielle-des-10-et-24-avril-2022-resultats-definitifs-du-1er-tour/")
-    scrap.get_result()
+    scrapFirstRound=Scraper("https://www.data.gouv.fr/fr/datasets/election-presidentielle-des-10-et-24-avril-2022-resultats-definitifs-du-1er-tour/")
+    scrapFirstRound.get_result(0)
+    scrapFirstRound.get_result(1)
+    scrapSecondRound=Scraper("https://www.data.gouv.fr/fr/datasets/election-presidentielle-des-10-et-24-avril-2022-resultats-definitifs-du-2nd-tour/")
+    scrapSecondRound.get_result(2)
+    scrapSecondRound.get_result(3)
     
