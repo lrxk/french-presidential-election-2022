@@ -23,10 +23,10 @@ class Refiner:
         for file in self.get_xlsx_file():
             df = pd.read_excel(file)
             if file in first_round_str:
-                self.individual_refiner_first_round(df).to_csv(
+                self.csv_refiner(df).to_csv(
                     file[0:len(file)-5]+".csv", index=False)
             else:
-                self.individual_refiner_second_round(df).to_csv(
+                self.csv_refiner(df).to_csv(
                     file[0:len(file)-5]+".csv", index=False)
         pass
     def get_candidates_order(self, df: pd.DataFrame):
@@ -61,12 +61,14 @@ class Refiner:
         return str_candidats
 
     def columns_to_repeat(self, df: pd.DataFrame):
+        """ Get the columns that are to repeat """
         columns_to_repeat = []
         for i in range(self.startColumnIndex, self.startColumnIndex+self.step):
             columns_to_repeat.append(df.columns[i])
         return columns_to_repeat
 
     def new_columns(self, df):
+        """ Create the new columns (candidats) """
         str_candidats = self.str_candidats(df)
         columns_to_repeat = self.columns_to_repeat(df)
         new_columns = []
@@ -77,25 +79,21 @@ class Refiner:
         return new_columns
 
     def columns_not_to_replace(self, df):
+        """ Get the columns that are not to replace """
         columns_not_to_replace = []
         for i in range(0, self.startColumnIndex):
             columns_not_to_replace.append(df.columns[i])
         return columns_not_to_replace
     # associate the actual column name to the future one
     def rename_column_dict(self, df):
+        """ Rename the columns """
         new_columns = self.new_columns(df)
         rename_column_dict = {}
         for i in range(len(new_columns)):
             rename_column_dict.update({df.columns[i]: new_columns[i]})
         return rename_column_dict
 
-    def individual_refiner_first_round(self, df: pd.DataFrame):
-        
-        df = df.rename(columns=self.rename_column_dict(df))
-        df=self.drop_repeated_columns(df)
-        return df
-
-    def individual_refiner_second_round(self, df: pd.DataFrame):
+    def csv_refiner(self, df: pd.DataFrame):
         
         df = df.rename(columns=self.rename_column_dict(df))
         df=self.drop_repeated_columns(df)
