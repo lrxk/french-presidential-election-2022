@@ -42,13 +42,15 @@ class Refiner:
     def drop_repeated_columns(self, df: pd.DataFrame):
         """ Drop the repeated columns """
         column_to_drop = []
-        first_row=df.loc[0]
-        for i in range(self.startColumnIndex,len(first_row) ,self.step):
+        # get the number of columns
+        nb_columns = len(df.columns)
+        for i in range(self.startColumnIndex,nb_columns ,self.step):
             column_to_drop.append(df.columns[i])
             column_to_drop.append(df.columns[i+1])
             column_to_drop.append(df.columns[i+2])
+        df.drop(column_to_drop, axis=1, inplace=True)
         return df
-    def str_candidats(self, df: pd.DataFrame, round):
+    def str_candidats(self, df: pd.DataFrame):
         """ Create column names """
         str_candidat = "_candidat_"
         str_candidats = []
@@ -64,8 +66,8 @@ class Refiner:
             columns_to_repeat.append(df.columns[i])
         return columns_to_repeat
 
-    def new_columns(self, df, round):
-        str_candidats = self.str_candidats(df, round)
+    def new_columns(self, df):
+        str_candidats = self.str_candidats(df)
         columns_to_repeat = self.columns_to_repeat(df)
         new_columns = []
         for i in range(len(str_candidats)):
@@ -80,8 +82,8 @@ class Refiner:
             columns_not_to_replace.append(df.columns[i])
         return columns_not_to_replace
     # associate the actual column name to the future one
-    def rename_column_dict(self, df, round):
-        new_columns = self.new_columns(df, round)
+    def rename_column_dict(self, df):
+        new_columns = self.new_columns(df)
         rename_column_dict = {}
         for i in range(len(new_columns)):
             rename_column_dict.update({df.columns[i]: new_columns[i]})
@@ -89,13 +91,13 @@ class Refiner:
 
     def individual_refiner_first_round(self, df: pd.DataFrame):
         
-        df = df.rename(columns=self.rename_column_dict(df, "first"))
+        df = df.rename(columns=self.rename_column_dict(df))
         df=self.drop_repeated_columns(df)
         return df
 
     def individual_refiner_second_round(self, df: pd.DataFrame):
         
-        df = df.rename(columns=self.rename_column_dict(df, "second"))
+        df = df.rename(columns=self.rename_column_dict(df))
         df=self.drop_repeated_columns(df)
         return df
 
