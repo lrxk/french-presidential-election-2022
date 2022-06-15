@@ -12,14 +12,17 @@ def pieChartDepFirstRound(labels, color):
         'Data/XLSX/Results/Departement/First_Round/resultats-par-niveau-dpt-t1-france-entiere.csv')
     columns = []
     noms_dpt = df_dpt_first_round["Libellé du département"]
-    for i in range(20, 88, 6):
+    for i in range(19, len(df_dpt_first_round.columns), 3):
         column = df_dpt_first_round.columns[i]
         columns.append(column)
     df_dpt_first_round=df_dpt_first_round[columns]
-    for i in range(101):
+    for i in range(len(df_dpt_first_round)):
+        #print((df_dpt_first_round.loc[i]))
         plt.pie(df_dpt_first_round.loc[i], labels=labels, colors=color)
         plt.axis('equal')
         plt.tight_layout()
+        # if a row contains '/' replace it with '-'
+        noms_dpt[i] = str(noms_dpt[i]).replace('/', '-')
         plt.savefig("Data/XLSX/Results/Departement/First_Round/Plot/" +
                     str(noms_dpt[i])+".png")
         plt.close()
@@ -29,14 +32,16 @@ def pieChartDepSecondRound(labels, color):
         'Data/XLSX/Results/Departement/Second_Round/resultats-par-niveau-dpt-t2-france-entiere.csv')
     columns = []
     noms_dpt = df_dpt_second_round["Libellé du département"]
-    for i in range(20, 32, 6):
+    for i in range(19, len(df_dpt_second_round.columns), 3):
         column = df_dpt_second_round.columns[i]
         columns.append(column)
     df_dpt_second_round=df_dpt_second_round[columns]
-    for i in range(101):
+    
+    for i in range(len(df_dpt_second_round)):
         plt.pie(df_dpt_second_round.loc[i], labels=labels, colors=color)
         plt.axis('equal')
         plt.tight_layout()
+        noms_dpt[i] = str(noms_dpt[i]).replace('/', '-')
         plt.savefig("Data/XLSX/Results/Departement/Second_Round/Plot/" +
                     str(noms_dpt[i])+".png")
         plt.close()
@@ -47,7 +52,7 @@ def pieChartRegFirstRound(labels, color):
         'Data/XLSX/Results/Region/First_Round/resultats-par-niveau-reg-t1-france-entiere.csv')
     columns = []
     noms_reg = df_reg_first_round["Libellé de la région"]
-    for i in range(20, 88, 6):
+    for i in range(19, len(df_reg_first_round.columns), 3):
         column = df_reg_first_round.columns[i]
         columns.append(column)
     df_reg_first_round=df_reg_first_round[columns]
@@ -65,8 +70,7 @@ def pieChartRegSecondRound(labels, color):
         'Data/XLSX/Results/Region/Second_Round/resultats-par-niveau-reg-t2-france-entiere.xlsx')
     columns = []
     noms_reg = df_reg_second_round["Libellé de la région"]
-
-    for i in range(20, 32, 6):
+    for i in range(19, len(df_reg_second_round.columns), 3):
         column = df_reg_second_round.columns[i]
         columns.append(column)
     df_reg_second_round=df_reg_second_round[columns]
